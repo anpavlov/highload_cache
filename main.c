@@ -11,7 +11,7 @@
 
 #define KB 1024
 #define MB 1024 * KB
-#define SIZE 8 * MB
+#define SIZE 0x1000000
 #define SPACE 101
 #define STEPS 1000
 //#define MAX_ITERS SIZE / SPACE
@@ -25,6 +25,9 @@
 
 //elem *shuffle_loop(elem *first);
 
+volatile char arr[SIZE];
+int access[0xFFFFFF];
+
 int main() {
 //    clock_t time;
 
@@ -34,29 +37,30 @@ int main() {
 //    =============
 
     srand(time(NULL));
+    static struct timespec t1, t2;
 
-    int i, j, k, l;
-    int x, y;
-    int temp;
+    register int i, j, k, l, x, y, temp;
+//    int x, y;
+//    int temp;
 //    int space = SPACE;
     int length;
 //    int size = SIZE / sizeof(int);
 //    int size = 2000000;
-    int max_iters = SIZE / SPACE;
-    char *arr = (char*)malloc(SIZE);
-    int *access = (int*)malloc(SIZE);
+//    int max_iters = SIZE / SPACE;
+//    char *arr = (char*)malloc(SIZE);
+//    int *access = (int*)malloc(0xFFFFFF);
 //    int access[size];
-    int step = max_iters / STEPS;
-    char t;
+//    int step = max_iters / STEPS;
+    volatile char t;
 
 //    for (i = 0; i < SIZE; ++i) {
 //        arr[i] = 0; access[i] = 0;
 //    }
     memset((void*)arr, 0, sizeof(arr));
-    memset((void*)access, 0, sizeof(access));
+//    memset((void*)access, 0, sizeof(access));
 
-    for (i = 1; i < max_iters; i += step) {
-        length = i;
+    for (i = 1024; i < SIZE;) {
+        length = i / SPACE;
 
 //        get positions to check
         for (j = 0; j < length; ++j) {
@@ -83,22 +87,33 @@ int main() {
 //        int steps = 64 * 1024 * 1024;
 //        int lengthMod = (1024 * 1024) - 1;
 //        int j;
+
+        if (i < 100*1024) x = 1024;
+        else if (i < 300*1024) x = 128;
+        else x = 32;
+
         clock_t start;
 
-        start = clock();
-        for (k = 0; k < 512; ++k) {
+//        start = clock();
+        clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &t1);
+        for (k = 0; k < x; ++k) {
             for (l = 0; l < SPACE; ++l) {
                 for (j = 0; j < length; j++) {
                     t = arr[access[j] + l];
                 }
             }
         }
-        start = clock() - start;
-        printf("%d %d %f\n", i, (int)start, (float)(length * SPACE * sizeof(int)) / KB);
+        clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &t2);
+//        start = clock() - start;
+//        printf("%d %d\n", i, (int)start);
+        printf("%d %g\n", i, 1000000000. * (((t2.tv_sec + t2.tv_nsec * 1.e-9) - (t1.tv_sec + t1.tv_nsec * 1.e-9)))/(double)(SPACE*length*x));
+
+        if (i > 100 * 1024) i += i/16;
+        else i += 4*1024;
 //        free(arr);
     }
 
-    free(arr);
+//    free(arr);
     free(access);
 
 //        int steps = 64 * 1024 * 1024;
