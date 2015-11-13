@@ -43,17 +43,17 @@ int main() {
 //    int size = SIZE / sizeof(int);
 //    int size = 2000000;
     int max_iters = SIZE / SPACE;
-    int *arr = (int*)malloc(sizeof(int) * SIZE);
-    int *access = (int*)malloc(sizeof(int) * SIZE);
+    char *arr = (char*)malloc(SIZE);
+    int *access = (int*)malloc(SIZE);
 //    int access[size];
     int step = max_iters / STEPS;
-    int t;
+    char t;
 
-    for (i = 0; i < SIZE; ++i) {
-        arr[i] = 0; access[i] = 0;
-    }
-//    memset(arr, 0, sizeof(arr));
-//    memset(access, 0, sizeof(access));
+//    for (i = 0; i < SIZE; ++i) {
+//        arr[i] = 0; access[i] = 0;
+//    }
+    memset((void*)arr, 0, sizeof(arr));
+    memset((void*)access, 0, sizeof(access));
 
     for (i = 1; i < max_iters; i += step) {
         length = i;
