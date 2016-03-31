@@ -68,13 +68,12 @@ int main() {
         measured = clock();
         for (k = 0; k < 50; ++k) {
 //            for (j = 0; j < count / 100; ++j) {
-                repeat(repeat(repeat(repeat(repeat(repeat(repeat(repeat(repeat(repeat(t1 = *t;
-                               t = t->next))))))))));
+                repeat(repeat(repeat(repeat(repeat(repeat(repeat(repeat(repeat(repeat(t = t->next))))))))));
 //            }
         }
 //        repeat(repeat(repeat(repeat(repeat(repeat(repeat(repeat(repeat(repeat(t = t->next))))))))));
         measured = clock() - measured;
-        printf("%d %d\n", (int) measured, (int)(count * 8));
+        printf("%d %d\n", (int)(((float)measured) * 1000000000/CLOCKS_PER_SEC)/(50 * 1024), (int)(count * sizeof(elem)));
         tail->next = NULL;
         free_list(first_elem);
 
